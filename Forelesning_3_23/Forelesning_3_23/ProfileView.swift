@@ -79,18 +79,22 @@ struct ProfileView: View {
                     Button("Slett bruker") {
                         deleteUserTapped()
                     }.padding()
+                    
                 }
+                
                 
             }.onAppear {
                 onAppear()
             }
-            Button("Opprett bruker") {
             
+            Button("Opprett bruker") {
+                
                 createUserTapped()
-            }
+            }.padding(.top)
         }
     }
 }
+
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {

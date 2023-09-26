@@ -39,19 +39,31 @@ struct ProductListView: View {
     @State var newProductPrice: String = ""
     @State var newProductDescription: String = ""
     
+    @State var userLoginStatus: String = ""
     
-    
-    //    @AppStorage var hasSeenOnboarding = false
-    
-    //    @Published
-    //    @ObservedObject
-    
-    
+    // called when view appears
+    func onAppear() {
+        print("on appear product list")
+        // not admin
+        if KeychainSwift().get(AppStorageKeys.password.rawValue) != nil,
+           
+            let username = UserDefaults().object(forKey: AppStorageKeys.username.rawValue) as? String
+        {
+            userLoginStatus = "Logget inn bruker: \(username)"
+            print(username)
+            
+        } else {
+            Text("Du er en vanlig bruker, Vennligst logg inn i appen!")
+        }
+        
+        
+        
+    }
     
     func addProduct() {
         print("user still tapped button")
         if let productPrice = Int(newProductPrice) {
-            let product = Product(name: newProductName, description: newProductDescription, price: productPrice)
+            let product = Product(name: newProductName, description: newProductDescription, price: productPrice, images: [])
             products.append(product)
         } else {
             print("feil format _\(newProductPrice)_")
@@ -98,31 +110,19 @@ struct ProductListView: View {
                         } else {
                             
                         }
-                        
-                        
-                        
                     } // HStack
                 } // Foreach
                 
-                
                 if isAdmin {
                     Button("Legg til produkt") {
-                        let newProduct = Product.init(name: "Sokker", description: "small, gule", price: 230)
+                        let newProduct = Product.init(name: "Sokker", description: "small, gule", price: 230, images: [])
                         print(products.count) // printer 2
                         products.append(newProduct)
                         isPresentingAddProductView = true
                         
                     }// Button
                 } else {
-                    // not admin
-                    if KeychainSwift().get(AppStorageKeys.password.rawValue) != nil,
-                       
-                        let username = UserDefaults().object(forKey: AppStorageKeys.username.rawValue) as? String
-                    {
-                        Text("Logget inn bruker: \(username)")
-                    } else {
-                        Text("Du er en vanlig bruker, Vennligst logg inn i appen!")
-                    }
+                    Text(userLoginStatus)
                 }
             }.sheet(isPresented: $isPresentingAddProductView) {
                 AddProductView() { product in
@@ -130,14 +130,19 @@ struct ProductListView: View {
                     isPresentingAddProductView = false
                 }
             }
+        }.onAppear {
+            onAppear()
+        }.onDisappear {
+            
         }
     }
 }
 
+
 struct ProductListView_Previews: PreviewProvider {
     static var previews: some View {
         ProductListView(products: Product.demoProducts, isAdmin: false, shoppingCart:
-                
+                            
                 .constant([])
         )
     }
